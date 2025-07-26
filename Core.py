@@ -1,8 +1,9 @@
 import pygame
 
 pygame.init()
+running = True
 
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((700, 400))
 pygame.display.set_caption('Live solo')
 
 
@@ -12,12 +13,15 @@ try:
 except:
     print("Ошибка загрузки иконки! Проверьте путь к файлу")
 
-running = True
 while running:
+
     screen.fill((66,135,245))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+
 
     pygame.display.update()
 
