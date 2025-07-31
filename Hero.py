@@ -4,7 +4,7 @@ class Hero( pygame.sprite.Sprite):
     def __init__(self,screen, x, y, speed):
         ''' инициализация персонажа'''
         super().__init__()
-        self.image = pygame.image.load('image/hero_img/Move/Layer 1_Солянка_1.png')
+        self.image = pygame.image.load('image/hero_img/Move/Layer 1_Solo1.png')
         self.image = pygame.transform.scale(self.image, (150, 150))
         self.image.set_colorkey( (255,255,255))
         self.orig_image = self.image
@@ -17,6 +17,7 @@ class Hero( pygame.sprite.Sprite):
         self.invnt = []
         self.implants = []
         self.speed = speed
+        self.sprint = speed * 2
 
         self.screen = screen
     def update(self):
@@ -33,7 +34,7 @@ class Hero( pygame.sprite.Sprite):
         self.image.set_colorkey( (255,255,255))
         self.rect = self.image.get_rect(center=self.rect.center)
     def move(self):
-        sprites = [f'image/hero_img/Move/Layer 1_Солянка_{i}.png' for i in range(1,5)]
+        sprites = [f'image/hero_img/Move/Layer 1_Solo{i}.png' for i in range(1,5)]
         for sprite in sprites:
             self.image = pygame.image.load(sprite)
             self.image = pygame.transform.scale(self.image, (150, 150))
