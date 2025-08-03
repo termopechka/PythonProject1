@@ -11,7 +11,7 @@ h = 1200
 w = 800
 '''атрибуты героя'''
 x = h // 2
-y = w // 2
+y = w // 2aaaaaaaa
 hero_speed = 10
 '''Включение шансона в жигулях'''
 # music = pygame.mixer.music.load('music/Cyberpunk_2077_-_Johnny_Silverhand_s_Theme_Cello_Version_(SkySound.cc).mp3')
@@ -29,9 +29,8 @@ hero = Hero(screen,x, y, hero_speed)
 
 running = True
 while running:
-    screen.fill((100,0,0))
-    hero.update()
-    hero.rotate()
+    screen.fill((100,100,0))
+    hero.imp()
     controls(hero)
     pygame.display.flip()
     clock.tick(60)
