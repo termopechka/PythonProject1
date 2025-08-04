@@ -1,6 +1,5 @@
 from Hero import Hero
 from Key_action import *
-from background import *
 pygame.init()
 
 
@@ -27,18 +26,22 @@ pygame.display.set_caption('Live solo')
 icon = pygame.image.load('image/assets_task_01k1476qdmfjsr95yxtwsdf192_1753562211_img_1.PNG')
 pygame.display.set_icon(icon)
 
-# Загружаем Леонарда Да Винчи (мапу)
-map = TileMap('hui_sosi_zaebal.csv', spritesheet='image/hero_img/state/Layer 1_solo_01.png')
-
-
+bullet_group = pygame.sprite.Group()
 hero = Hero(screen,x, y, hero_speed)
 
+
+def custom_group_draw(group, screen):
+    for sprite in group:
+        sprite.draw(screen)
+pygame.mouse.set_visible(False)
 running = True
 while running:
-    screen.fill((100,100,0))
-    map.draw_map(screen)
+    screen.fill((100,100,100))
     hero.imp()
-    controls(hero)
+    controls(hero, bullet_group)
+    bullet_group.update()
+    custom_group_draw(bullet_group, screen)
     pygame.display.flip()
     clock.tick(60)
+
 pygame.quit()

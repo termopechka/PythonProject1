@@ -3,8 +3,7 @@ import pygame,sys
 from Hero import Bullet
 
 
-def controls(h):
-
+def controls(h, bullet_group):
     '''Обработка нажатий'''
     for event in pygame.event.get():
 
@@ -46,16 +45,13 @@ def controls(h):
         h.status = 'move'
     else:
         h.status = 'stand'
-        
+
     if mouse[0] and not h.shoot:
         h.status = 'shoot'
-        pos = pygame.mouse.get_pos()
+        start_pos = h.rect.center
+        target_pos = pygame.mouse.get_pos()
+        bullet = Bullet(start_pos, target_pos, h.get_rotation_angle())
 
-        # b.update()
-
-
-
-
+        bullet_group.add(bullet)
         h.shoot_time = pygame.time.get_ticks()
         h.shoot = True
-    
