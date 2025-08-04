@@ -55,3 +55,11 @@ def controls(h, bullet_group):
         bullet_group.add(bullet)
         h.shoot_time = pygame.time.get_ticks()
         h.shoot = True
+
+
+
+
+
+def custom_group_draw(group, screen):
+    for sprite in group:
+        sprite.draw(screen)
