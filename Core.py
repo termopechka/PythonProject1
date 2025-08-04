@@ -31,7 +31,7 @@ bullet_group = pygame.sprite.Group()
 hero = Hero(screen,x, y, hero_speed)
 
 # Кушать какашки не причмокивая
-map = TileMap('suda_svoi_zalupu.csv', spritesheet='suda_svoi_zalupu.png')
+map = TileMap('suda_svoi_zalupu.csv', spritesheet=hero.image)
 
 def custom_group_draw(group, screen):
     for sprite in group:
