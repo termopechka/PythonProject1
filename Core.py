@@ -1,21 +1,11 @@
 from Hero import Hero,mouse
 from Key_action import *
 from background import *
+from Setting import *
 pygame.init()
-
-
-
-
 clock = pygame.time.Clock()
-SETTING = 1
-h = 1024 # 16 * 64 or 32 * 32 or 64 * 16
-w = 768 # 16 * 48 or 32 * 24 or 64 * 12
 
 
-'''атрибуты героя'''
-x = h // 2
-y = w // 2
-hero_speed = 10
 '''Включение шансона в жигулях'''
 # music = pygame.mixer.music.load('music/Cyberpunk_2077_-_Johnny_Silverhand_s_Theme_Cello_Version_(SkySound.cc).mp3')
 # # music = pygame.mixer.music.load('music/samurai-never-fade-away-full-instrumental-cover_(get-tune.net).mp3')
