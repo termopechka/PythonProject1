@@ -1,5 +1,6 @@
 from Hero import Hero,mouse
 from Key_action import *
+from background import *
 pygame.init()
 
 
@@ -30,6 +31,8 @@ bullet_group = pygame.sprite.Group()
 hero = Hero(screen,x, y, hero_speed)
 mouse = mouse(screen)
 
+# Кушать какашки не причмокивая
+map = TileMap('suda_svoi_zalupu.csv', spritesheet='suda_svoi_zalupu.png')
 
 pygame.mouse.set_visible(False)
 running = True
@@ -38,6 +41,7 @@ while running:
     mouse.update()
     mouse.draw()
     hero.imp()
+    map.draw_map(screen)
     controls(hero, bullet_group)
     bullet_group.update()
     custom_group_draw(bullet_group, screen)
