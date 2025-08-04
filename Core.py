@@ -32,7 +32,7 @@ hero = Hero(screen,x, y, hero_speed)
 mouse = mouse(screen)
 
 # Кушать какашки не причмокивая
-map = TileMap('suda_svoi_zalupu.csv', spritesheet=hero.image)
+map = TileMap('untitled.csv', spritesheet=hero.image)
 
 pygame.mouse.set_visible(False)
 running = True
