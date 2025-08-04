@@ -1,5 +1,6 @@
 from Hero import Hero
 from Key_action import *
+from background import *
 pygame.init()
 
 
@@ -26,12 +27,16 @@ pygame.display.set_caption('Live solo')
 icon = pygame.image.load('image/assets_task_01k1476qdmfjsr95yxtwsdf192_1753562211_img_1.PNG')
 pygame.display.set_icon(icon)
 
+# Загружаем Леонарда Да Винчи (мапу)
+map = TileMap('hui_sosi_zaebal.csv', spritesheet='image/hero_img/state/Layer 1_solo_01.png')
+
 
 hero = Hero(screen,x, y, hero_speed)
 
 running = True
 while running:
     screen.fill((100,100,0))
+    map.draw_map(screen)
     hero.imp()
     controls(hero)
     pygame.display.flip()
