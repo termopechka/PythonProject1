@@ -118,15 +118,27 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = rotated_image.get_rect(center=self.rect.center)
         screen.blit(rotated_image, self.rect)
 class mouse(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y):
+    def __init__(self, screen):
         super().__init__()
-        self.image = pygame.image.load('image/action_img/mouse.png')
+        self.image = pygame.image.load('image/action_img/sprite_0.png')
         self.image = pygame.transform.scale(self.image, (50, 50))
-        self.image.set_colorkey((255, 255, 255))
-
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
         self.screen = screen
+
+        self.img_lst = []
+        for i in range(0,4):
+            img = pygame.image.load(f'image/action_img/sprite_{i}.png')
+            img = pygame.transform.scale(img, (50, 50))
+            self.img_lst.append(img)
+        self.sprites_now = 0
+        self.speed_sprites = 0.15
+    def update(self):
+        self.rect.center = pygame.mouse.get_pos()
+
     def draw(self):
-        self.screen.blit(self.image, self.rect)
+        self.sprites_now += self.speed_sprites
+        self.sprites_now %= len(self.img_lst)
+        self.image = self.img_lst[int(self.sprites_now)]
+        self.image.set_colorkey((255, 255, 255))
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.screen.blit(self.image, self.rect.center)
