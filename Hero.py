@@ -1,5 +1,10 @@
+import math
+
 import pygame
 from pygame.math import Vector2
+from pygame.transform import rotate
+
+
 class Hero(pygame.sprite.Sprite):
     def __init__(self, screen, x, y, speed):
         ''' инициализация персонажа'''
@@ -39,11 +44,6 @@ class Hero(pygame.sprite.Sprite):
             img = pygame.transform.scale(img, (150, 150))
             img.set_colorkey((255, 255, 255))
             self.shoot_list.append(img)
-
-
-
-
-
         self.screen = screen
     def update(self):
         self.sprites_now += self.speed_sprites
@@ -65,16 +65,13 @@ class Hero(pygame.sprite.Sprite):
     def rotate(self):
             '''Поворот персонажа к курсору мыши'''
             mouse_pos = pygame.mouse.get_pos()
-
             direction = Vector2(mouse_pos) - Vector2(self.rect.center)
 
 
-            self.angle = direction.as_polar()[1]  # Угол в градусах
-
+            self.angle = direction.as_polar()[1]
             self.image = pygame.transform.rotate(self.orig_image, -self.angle - 90)
             self.image.set_colorkey((255, 255, 255))
 
-            # 5. Обновляем rect для сохранения позиции
             old_center = self.rect.center
             self.rect = self.image.get_rect()
             self.rect.center = old_center
@@ -92,15 +89,44 @@ class Hero(pygame.sprite.Sprite):
         self.rotate()
         self.cooldown()
 
+
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, screen, x, y, speed):
+    def __init__(self, start_pos, target_pos,angle):
         super().__init__()
         self.image = pygame.image.load('image/action_img/Bullet.png')
-        self.image = pygame.transform.scale(self.image, (10, 10))
-        self.image.set_colorkey( (255,255,255))
-        self.speed = speed
-        self.x = x
-        self.y = y
+        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.image.set_colorkey((255,255,255))
+
+        self.rect = self.image.get_rect()
+        self.rect.center = start_pos
+        self.bullet_speed = 70
+
+        self.angle = angle
+        direction = pygame.math.Vector2(target_pos) - pygame.math.Vector2(start_pos)
+        if direction.length() != 0:
+            direction = direction.normalize()
+        self.speedx = direction.x * self.bullet_speed
+        self.speedy = direction.y * self.bullet_speed
+
+    def update(self):
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+
+    def draw(self, screen):
+        rotated_image = pygame.transform.rotate(self.image, self.angle)
+        rotated_image.set_colorkey((255, 255, 255))
+        self.rect = rotated_image.get_rect(center=self.rect.center)
+        screen.blit(rotated_image, self.rect)
+class mouse(pygame.sprite.Sprite):
+    def __init__(self, screen, x, y):
+        super().__init__()
+        self.image = pygame.image.load('image/action_img/mouse.png')
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.image.set_colorkey((255, 255, 255))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
         self.screen = screen
-    def update(self,direction_x,direction_y):
-        pass
+    def draw(self):
+        self.screen.blit(self.image, self.rect)
