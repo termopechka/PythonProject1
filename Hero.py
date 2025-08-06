@@ -13,13 +13,12 @@ class Hero(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (150, 150))
         self.image.set_colorkey( (255,255,255))
         self.orig_image = self.image
-
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.angle = None
 
-        self.HEALTH = 100
+        self.HEALTH = 90
         self.invnt = []
         self.implants = []
         self.speed = speed
@@ -76,8 +75,6 @@ class Hero(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.rect.center = old_center
             self.screen.blit(self.image, self.rect)
-    def move(self):
-                pass
     def cooldown(self):
         current_time = pygame.time.get_ticks()
         if self.shoot:
@@ -88,13 +85,19 @@ class Hero(pygame.sprite.Sprite):
         self.update()
         self.rotate()
         self.cooldown()
+        self.draw_hp()
+    def draw_hp(self):
+        hp_bar = self.HEALTH
+        pygame.draw.rect(self.screen, (255, 0, 0), ( 50, 50, 100 * 2, 20))
+        pygame.draw.rect(self.screen, (0, 255, 0), ( 50, 50, self.HEALTH * 2, 20))
+        self.screen.blit(self.image, self.rect)
 
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos,angle):
         super().__init__()
-        self.image = pygame.image.load('image/action_img/Bullet.png')
-        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.image = pygame.image.load('image/action_img/Bull2.png')
+        self.image = pygame.transform.scale(self.image, (40, 40))
         self.image.set_colorkey((255,255,255))
 
         self.rect = self.image.get_rect()
@@ -115,7 +118,7 @@ class Bullet(pygame.sprite.Sprite):
     def draw(self, screen):
         rotated_image = pygame.transform.rotate(self.image, self.angle)
         rotated_image.set_colorkey((255, 255, 255))
-        self.rect = rotated_image.get_rect(center=self.rect.center)
+        self.rect = rotated_image.get_rect(center=self.rect.center )
         screen.blit(rotated_image, self.rect)
 class mouse(pygame.sprite.Sprite):
     def __init__(self, screen):

@@ -2,6 +2,7 @@ from Hero import Hero,mouse
 from Key_action import *
 from background import *
 from Setting import *
+from enemy import *
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -20,18 +21,19 @@ pygame.display.set_icon(icon)
 bullet_group = pygame.sprite.Group()
 hero = Hero(screen,x, y, hero_speed)
 mouse = mouse(screen)
-
-# Кушать какашки не причмокивая
+enemy = Enemy('en1', (enemy_x, enemy_y), enemy_speed,)
 map = TileMap('untitled.csv', spritesheet=hero.image)
 
 pygame.mouse.set_visible(False)
 running = True
 while running:
-    screen.fill((100,100,100))
+    screen.fill((100, 100, 100))
+    map.draw_map(screen)
     mouse.update()
     mouse.draw()
     hero.imp()
-    map.draw_map(screen)
+    hero.imp()
+    enemy.rotate_to_player(screen,  hero.rect.center)
     controls(hero, bullet_group)
     bullet_group.update()
     custom_group_draw(bullet_group, screen)

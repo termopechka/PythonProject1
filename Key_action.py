@@ -51,13 +51,9 @@ def controls(h, bullet_group):
         start_pos = h.rect.center
         target_pos = pygame.mouse.get_pos()
         bullet = Bullet(start_pos, target_pos, h.get_rotation_angle())
-
         bullet_group.add(bullet)
         h.shoot_time = pygame.time.get_ticks()
         h.shoot = True
-
-
-
 
 
 def custom_group_draw(group, screen):

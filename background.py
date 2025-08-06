@@ -48,11 +48,11 @@ class TileMap():
                     tiles.append(Tile('asphalt1.png', x * self.tile_size, y * self.tile_size, self.spritesheet))
                 elif tile == '2':
                     tiles.append(Tile('asphalt2.png', x * self.tile_size, y * self.tile_size, self.spritesheet))
-                    # Пиздуешь дальше загружать текстурки (32х32 файлы)
+                    # дальше загружать текстурки (32х32 файлы)
                 x += 1
-                # Пиздуешь ряд (не лезь, просто загрузи текстурки)
+                #  ряд (не лезь, просто загрузи текстурки)
             y += 1
-            # сохраняем размерчики для нашой дилдонии (мапы)
+            # сохраняем размерчики для нашой мапы
         self.map_w, self.map_h = x * self.tile_size, y * self.tile_size
         # возвращаем 1749
         return tiles
