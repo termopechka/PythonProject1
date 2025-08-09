@@ -3,7 +3,6 @@ import pygame
 class Parents(pygame.sprite.Sprite):
     def __init__(self, string):
         super().__init__()
-
         self.lst = []
         for i in range(0,4):
             img = pygame.image.load(f'image/action_img/{string}_{i}.png')

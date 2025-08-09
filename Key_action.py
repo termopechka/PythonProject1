@@ -19,13 +19,13 @@ def controls(h, bullet_group):
     dx = 0
     dy = 0
 
-    if keys[pygame.K_a]: dx -= 1
+    if keys[pygame.K_a] and h.rect.x > 0 : dx -= 1
     h.status = 'move'
-    if keys[pygame.K_d]: dx += 1
+    if keys[pygame.K_d]  and h.rect.x < 850 : dx += 1
     h.status = 'move'
-    if keys[pygame.K_w]: dy -= 1
+    if keys[pygame.K_w] and h.rect.y > 0 : dy -= 1
     h.status = 'move'
-    if keys[pygame.K_s]: dy += 1
+    if keys[pygame.K_s] and h.rect.y < 600 : dy += 1
     h.status = 'move'
     if keys[pygame.K_LSHIFT]: h.speed = h.sprint
     else:h.speed = h.sprint // 2
@@ -54,6 +54,7 @@ def controls(h, bullet_group):
         bullet_group.add(bullet)
         h.shoot_time = pygame.time.get_ticks()
         h.shoot = True
+
 
 
 def custom_group_draw(group, screen):
