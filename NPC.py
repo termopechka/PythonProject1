@@ -25,9 +25,9 @@ class NPC(pygame.sprite.Sprite):
         super().__init__()
         self.x = x
         self.y = y
-        self.radius = 10
+        self.radius = 50
         self.isdialogactive = False
-        self.icon_interaction = pygame.transform.scale(pygame.image.load('image/images.jpg'), (50, 50))
+        self.icon_interaction = pygame.transform.scale(pygame.image.load('image/back/img.png'), (500, 500))
         self.list = []
         for i in range(0,4):
             img = pygame.image.load(f'image/images.jpg')
@@ -35,10 +35,12 @@ class NPC(pygame.sprite.Sprite):
             self.list.append(img)
         self.sprites_now = 0
         self.speed_sprites = 0.15
+
     def detect_player(self, x, y, screen):
-        self.distance = math.sqrt((self.x - x) ** 2 + (self.y - y) ** 2)
+        self.distance = math.sqrt((100 - x) ** 2 + (100 - y) ** 2)
         if self.distance <= self.radius:
             screen.blit(self.icon_interaction, (50, 50))
+
 
     def update(self):
         self.sprites_now += self.speed_sprites
@@ -48,5 +50,6 @@ class NPC(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(0,0))
 
     def draw_npc(self, screen):
-        screen.blit(self.image, (50, 50))
+        screen.blit(self.image, (100, 100))
+
 
