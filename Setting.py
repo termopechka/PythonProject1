@@ -17,3 +17,8 @@ hero_speed = 4
 enemy_x = random.randint(0,800)
 enemy_y = random.randint(0,700)
 enemy_speed = 2.5
+enemy_speed = 5
+
+# attribute NPCs
+npc_x = 300
+npc_y = 200
