@@ -6,28 +6,39 @@ from pygame.transform import rotate
 
 
 class Hero(pygame.sprite.Sprite):
+    '''Класс персонажа, наследуется от pygame.sprite.Sprite, содержит методы для инициализации персонажа, обновления состояния, поворота к курсору мыши, проверки на время перезарядки стрельбы и отрисовки полосок здоровья и человечности'''
     def __init__(self, screen, x, y, speed):
-        ''' инициализация персонажа'''
+        ''' инициализация персонажа принимает екран для отрисовки изображения, координаты и скорость
+        внутри метода есть , 5 основных атрибутов как в рпг, здоровье, человечность, скорость, харизма
+        и уровень, также есть атрибуты для инвентаря, имплантов и снаряжения, а также атрибуты для стрельбы
+        и анимации персонажа, такие как список изображений для ходьбы и стрельбы, скорость смены кадров и статус персонажа'''
         super().__init__()
         self.image = pygame.image.load('image/hero_img/state/Layer 1_sprite_01.png')
-        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.image = pygame.transform.scale(self.image, (100, 100))
         self.image.set_colorkey((255, 255, 255))
         self.orig_image = self.image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.angle = None
+        self.mask = pygame.mask.from_surface(self.image)
 
-        self._layer = 10
+
+
+        self.HEALTH = 100
+        self.humanize = 100  # Человечность
+        self.cooldown_shoot = 400
+        self.sprint = speed * 1.5  # Ускорение
+        self.harizm = 0
+
+        self.level = 1
+        self.exp = 0
+        self.point = 0
 
         self.HEALTH1 = 100
-        self.HEALTH = 100
         self.invnt = []
         self.implants = []
         self.speed = speed
-        self.sprint = speed * 2
-        self.humanize = 100  # Человечность
-        self.cooldown_shoot = 400
         self.shoot = None
 
         self.sprites_now = 0
@@ -36,18 +47,20 @@ class Hero(pygame.sprite.Sprite):
         self.walk_list = []
         for i in range(1, 5):
             img = pygame.image.load(f'image/hero_img/state/Layer 1_sprite_0{i}.png')
-            img = pygame.transform.scale(img, (150, 150))
+            img = pygame.transform.scale(img, (100, 100))
             img.set_colorkey( (255,255,255))
             self.walk_list.append(img)
 
         self.shoot_list = []
         for i in range(6, 10):
             img = pygame.image.load(f'image/hero_img/Shoot/Layer 1_sprite_0{i}.png')
-            img = pygame.transform.scale(img, (150, 150))
+            img = pygame.transform.scale(img, (100, 100))
             img.set_colorkey((255, 255, 255))
             self.shoot_list.append(img)
         self.screen = screen
+
     def update(self):
+        '''Обновление состояния персонажа, смена кадров анимации в зависимости от статуса'''
         self.sprites_now += self.speed_sprites
         if self.sprites_now >= len(self.walk_list):
             self.sprites_now = 0
@@ -61,10 +74,11 @@ class Hero(pygame.sprite.Sprite):
             self.image = self.walk_list[0]
             self.orig_image = self.image
     def get_rotation_angle(self):
+        '''Получение угла поворота персонажа к курсору мыши'''
         direction = pygame.mouse.get_pos() - Vector2(self.rect.centerx, self.rect.centery)
         return -direction.as_polar()[1] - 90
     def rotate(self):
-            '''Поворот персонажа к курсору мыши'''
+            '''Поворот персонажа к курсору мыши по средству вычетания вектора координат центра персонажа и вектора курсора мыши,'''
             mouse_pos = pygame.mouse.get_pos()
             direction = Vector2(mouse_pos) - Vector2(self.rect.center)
 
@@ -78,6 +92,7 @@ class Hero(pygame.sprite.Sprite):
             self.rect.center = old_center
             self.screen.blit(self.image, self.rect)
     def cooldown(self):
+        '''Проверка на время перезарядки стрельбы, если время перезарядки прошло, то статус персонажа меняется на "stand"'''
         current_time = pygame.time.get_ticks()
         if self.shoot:
             if current_time - self.shoot_time >= self.cooldown_shoot:
@@ -85,54 +100,62 @@ class Hero(pygame.sprite.Sprite):
                 self.status = 'stand'
 
     def draw_hp_image(self):
-
-        self.hp = None
-        if self.HEALTH > 80:
-            self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp1.png')
-        elif self.HEALTH > 40:
-            self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp2.png')
-        elif self.HEALTH > 0:
-            self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp3.png')
-        self.hp = pygame.transform.scale(self.hp, (200, 200))
-        self.screen.blit(self.hp, (10, 10))
-
+        '''Меняет лицо игрока в зависимости от уровня здоровья, если здоровье больше 80, то лицо без повреждений, если меньше 80, но больше 40, то лицо разбито, если меньше 40, то лицо в мясо'''
+        if self.HEALTH > 0:
+            self.hp = None
+            if self.HEALTH > 80:
+                self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp1.png')
+            elif self.HEALTH > 40:
+                self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp2.png')
+            elif self.HEALTH > 0:
+                self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp3.png')
+            self.hp = pygame.transform.scale(self.hp, (90, 90))
+            self.screen.blit(self.hp, (10, 10))
+        else :
+            print('GAME OVER')
+            pygame.quit()
+            quit()
 
     def draw_humanizm(self):
+        '''рисует человечность игрока и отображает ее в виде заполнености шприцов с имунодипресантами, если человечность больше 100, то рисуется 5 полных шприцов , если меньше 100, то рисуется столько изображений, сколько человечности деленное на 20'''
         self.hmnz = []
         for i in range(self.humanize // 20):
             img = pygame.image.load(f'image/hero_img/humanizm/shprc_0.png')
-            img = pygame.transform.scale(img, (50, 50))
+            img = pygame.transform.scale(img, (100, 100))
             self.hmnz.append(img)
         if len(self.hmnz) < 5:
             for i in range(5 - len(self.hmnz)):
                 img = pygame.image.load(f'image/hero_img/humanizm/shprc_1.png')
-                img = pygame.transform.scale(img, (50, 50))
+                img = pygame.transform.scale(img, (100, 100))
                 self.hmnz.append(img)
         for i in self.hmnz:
-            self.screen.blit(i, (90, (self.hmnz.index(i) * 10) + 90))
+            self.screen.blit(i, (10, (self.hmnz.index(i) * 20) + 80))
 
 
     def draw_hp(self):
+        '''Рисует полоску здоровья игрока, если здоровье меньше 100, то рисуется желтая полоска, которая уменьшается в зависимости от здоровья, если здоровье больше 100, то рисуется зеленая полоска'''
         if self.HEALTH1 != self.HEALTH:
-            pygame.draw.rect(self.screen, (252, 186, 3), (90, 65, (self.HEALTH1 * 2)  , 20))
-            print(self.HEALTH1)
+            pygame.draw.rect(self.screen, (252, 186, 3), (97, 25, (self.HEALTH1 * 2)  , 20))
             self.HEALTH1 -= 0.5 if self.HEALTH1 > self.HEALTH else 0
-        pygame.draw.rect(self.screen, (70, 181, 45), (90, 65, (self.HEALTH * 2) , 20))
+        pygame.draw.rect(self.screen, (70, 181, 45), (97, 25, (self.HEALTH * 2) , 20))
 
 
     def imp(self):
-            self.update()
-            self.rotate()
-            self.cooldown()
-            self.draw_hp_image()
-            self.draw_hp()
-            self.draw_humanizm()
+        '''Импорт персонажа, обновление состояния персонажа, поворот персонажа к курсору мыши, проверка на время перезарядки стрельбы, отрисовка полоски здоровья и человечности'''
+        self.update()
+        self.rotate()
+        self.cooldown()
+        self.draw_hp_image()
+        self.draw_hp()
+        self.draw_humanizm()
 
 class Bullet(pygame.sprite.Sprite):
+    '''Класс пули, наследуется от pygame.sprite.Sprite, содержит методы для инициализации пули, обновления состояния и отрисовки пули'''
     def __init__(self, start_pos, target_pos, angle):
+        '''Инициализация пули, принимает начальную позицию, конечную позицию и угол поворота пули'''
         super().__init__()
-        self.image = pygame.image.load('image/action_img/New Piskel-1.png (3).png')
-        self.image = pygame.transform.scale(self.image, (40, 40))
+        self.image = pygame.image.load('image/action_img/pyla_vrag0.png')
+        self.image = pygame.transform.scale(self.image, (10, 10))
         self.image.set_colorkey((255,255,255))
 
         self.mask = pygame.mask.from_surface(self.image)
@@ -148,16 +171,19 @@ class Bullet(pygame.sprite.Sprite):
         self.speedy = direction.y * self.bullet_speed
 
     def update(self):
+        '''Обновление состояния пули, перемещение пули в зависимости от скорости и угла поворота'''
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
     def draw(self, screen):
+        '''Отрисовка пули, поворот пули в зависимости от угла поворота'''
         rotated_image = pygame.transform.rotate(self.image, self.angle)
         rotated_image.set_colorkey((255, 255, 255))
         self.rect = rotated_image.get_rect(center=self.rect.center )
         screen.blit(rotated_image, self.rect)
 
 class mouse(pygame.sprite.Sprite):
+    '''Класс мыши, наследуется от pygame.sprite.Sprite, содержит методы для инициализации мыши, отрисовки анимации мыши'''
     def __init__(self, screen):
         super().__init__()
         self.image = pygame.image.load('image/action_img/Layer 1_Cursor1.png')
@@ -174,8 +200,9 @@ class mouse(pygame.sprite.Sprite):
         self.speed_sprites = 0.15
 
 
-    def draw(self):
-        self.rect.center = (pygame.mouse.get_pos()[0]-25, pygame.mouse.get_pos()[1]-23)
+    def draw(self,mouse_pos):
+        '''Отрисовка мыши, смена кадров анимации в зависимости от времени'''
+        self.rect.center = (mouse_pos[0]-25, mouse_pos[1]-23)
 
         self.sprites_now += self.speed_sprites
         self.sprites_now %= len(self.img_lst)

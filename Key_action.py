@@ -3,13 +3,17 @@ import pygame,sys
 from Hero import Bullet
 
 
-def controls(h, bullet_group):
-    '''Обработка нажатий'''
-    for event in pygame.event.get():
+def controls(h, bullet_group,menu,):
+    '''Управление персонажем и обработка событий
+    :param h: объект персонажа
+    :param bullet_group: группа пуль
+    :param menu: объект меню'''
 
+    for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            return
+
+
     # move
     if not hasattr(h, 'real_x'):
         h.real_x = float(h.rect.x)
@@ -18,6 +22,8 @@ def controls(h, bullet_group):
     mouse = pygame.mouse.get_pressed()
     dx = 0
     dy = 0
+    if keys[pygame.K_ESCAPE]:
+            menu.view = True
 
     if keys[pygame.K_a] and h.rect.x > 0 : dx -= 1
     h.status = 'move'
@@ -58,5 +64,7 @@ def controls(h, bullet_group):
 
 
 def custom_group_draw(group, screen):
+    '''Отрисовка группы спрайтов на экране
+    group - группа спрайтов, screen - экран для отрисовки'''
     for sprite in group:
         sprite.draw(screen)
