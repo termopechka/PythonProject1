@@ -7,7 +7,7 @@ from pygame.transform import rotate
 
 class Hero(pygame.sprite.Sprite):
     '''Класс персонажа, наследуется от pygame.sprite.Sprite, содержит методы для инициализации персонажа, обновления состояния, поворота к курсору мыши, проверки на время перезарядки стрельбы и отрисовки полосок здоровья и человечности'''
-    def __init__(self, screen, x, y, speed):
+    def __init__(self, screen, x=512, y=384,Implants = None, speed=4,health=100, humanize=100,cooldown_shoot=400,harizm = 0, level=1, exp=0, point=0):
         ''' инициализация персонажа принимает екран для отрисовки изображения, координаты и скорость
         внутри метода есть , 5 основных атрибутов как в рпг, здоровье, человечность, скорость, харизма
         и уровень, также есть атрибуты для инвентаря, имплантов и снаряжения, а также атрибуты для стрельбы
@@ -25,22 +25,25 @@ class Hero(pygame.sprite.Sprite):
 
 
 
-        self.HEALTH = 100
-        self.humanize = 100  # Человечность
-        self.cooldown_shoot = 400
-        self.sprint = speed * 1.5  # Ускорение
-        self.harizm = 0
+        self.HEALTH = health  # Здоровье
+        self.humanize = humanize  # Человечность
+        self.cooldown_shoot = cooldown_shoot  # Время перезарядки стрельбы
+        self.speed = speed # Скорость движения
+        self.harizm = harizm  # Харизма
+
 
         self.level = 1
-        self.exp = 0
+        self.exp = 0 if exp >= 80 + level * 20 else exp
         self.point = 0
 
-        self.HEALTH1 = 100
-        self.invnt = []
-        self.implants = []
-        self.speed = speed
+
+        self.HEALTH1 = self.HEALTH  # Здоровье для отрисовки полоски здоровья
+        self.implants = [] if Implants == None else []  # Импланты персонажа
+        self.sprint = speed * 1.5  # Ускорение
         self.shoot = None
 
+        self.dilog = False
+        self.dilog_now = 0
         self.sprites_now = 0
         self.speed_sprites = 0.15
         self.status = 'stand'
@@ -58,6 +61,8 @@ class Hero(pygame.sprite.Sprite):
             img.set_colorkey((255, 255, 255))
             self.shoot_list.append(img)
         self.screen = screen
+    def return_main_attributes(self):
+        return  None,self.implants if self.implants != [] else None, self.speed, self.HEALTH , self.humanize,  self.cooldown_shoot,   self.harizm, self.level,self.exp, self.point
 
     def update(self):
         '''Обновление состояния персонажа, смена кадров анимации в зависимости от статуса'''
