@@ -82,6 +82,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.HEALTH -= 10
                 bullet.kill()
             if self.HEALTH <= 0:
+
                 self.kill()
 
     def draw_hp(self):

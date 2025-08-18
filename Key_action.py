@@ -18,6 +18,8 @@ def controls(h, bullet_group,menu,):
     if not hasattr(h, 'real_x'):
         h.real_x = float(h.rect.x)
         h.real_y = float(h.rect.y)
+
+
     keys = pygame.key.get_pressed()
     mouse = pygame.mouse.get_pressed()
     dx = 0
@@ -25,13 +27,16 @@ def controls(h, bullet_group,menu,):
     if keys[pygame.K_ESCAPE]:
             menu.view = True
 
+    if keys[pygame.K_e] :
+        h.dilog = True
+
     if keys[pygame.K_a] and h.rect.x > 0 : dx -= 1
     h.status = 'move'
     if keys[pygame.K_d]  and h.rect.x < 850 : dx += 1
     h.status = 'move'
     if keys[pygame.K_w] and h.rect.y > 0 : dy -= 1
     h.status = 'move'
-    if keys[pygame.K_s] and h.rect.y < 600 : dy += 1
+    if keys[pygame.K_s] and h.rect.y < 700 : dy += 1
     h.status = 'move'
     if keys[pygame.K_LSHIFT]: h.speed = h.sprint
     else:h.speed = h.sprint // 2
