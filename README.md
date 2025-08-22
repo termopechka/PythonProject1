@@ -4,7 +4,7 @@ LiveSolo - PyGame project, created by Indi-Developers and Art-Designers, based o
 
 Setup ⚙️
 1. Cloning this repository to your IDE (VS Code, PyCharm)
-2. In terminal print <pre><code> pip install pytmx pygame sqlite3 </code></pre>
+2. In terminal: <pre><code> pip install pytmx pygame sqlite3 </code></pre>
 3. Run the game! Enjoy!<br>
 
 About Us 🛡️<br>
