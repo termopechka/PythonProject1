@@ -1,5 +1,8 @@
 import pygame.time
 import sqlite3
+import os
+import pytmx
+from pytmx.util_pygame import load_pygame
 from Hero import Hero,mouse
 from Key_action import controls, custom_group_draw
 from background import *
@@ -8,13 +11,16 @@ from enemy import Enemy
 from pygame.sprite import LayeredUpdates
 from Menu import Button, Menu
 from NPC import NPC
+
+from camera import create_screen
+from camera import camera
 from Implants import Implants
 pygame.init()
 clock = pygame.time.Clock()
 last_save_time = 0
 save_cooldown = 500
 
-action = True
+action = False
 status_music = True
 if status_music:
     if action :
@@ -24,14 +30,16 @@ if status_music:
     pygame.mixer.music.play(-10)
 
 
-screen = pygame.display.set_mode((h,w))
-pygame.display.set_caption('Live solo')
+
+
+screen = create_screen(h, w, 'Live solo')
 icon = pygame.image.load('image/assets_task_01k1476qdmfjsr95yxtwsdf192_1753562211_img_1.PNG')
 pygame.display.set_icon(icon)
 
 pause = True
 bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
+objects = pygame.sprite.Group()
 hero = Hero(screen, x, y, Implant, Speed, Health, Humanizm, Coldown, harizm, Level, Exp, Point,)
 mouse = mouse(screen)
 for i in  range(enemy_count):
@@ -40,9 +48,15 @@ for i in  range(enemy_count):
 
 
 
-npc = NPC(400, 650,font='font/DIGITALPIXELV4-REGULAR.ttf', name='Фиксер',lst_sprites=[f'image/Npc/Layer 1_fixer{i}.png' for i in range(1,5)],size=[100, 100],dialog=[''])
+fixer = NPC(400, 650,font='font/DIGITALPIXELV4-REGULAR.ttf', name='Фиксер',lst_sprites=[f'image/Npc/Layer 1_fixer{i}.png' for i in range(1,5)],size=[100, 100], dialog=['Hey!'])
 
-map = TileMap('untitled.csv', spritesheet=hero.image)
+
+
+
+map = load_pygame(os.path.join('image', 'back', 'city.tmx'))
+map_width = map.width * map.tilewidth
+map_height = map.height * map.tileheight
+
 pygame.mouse.set_visible(False)
 running = True
 
@@ -56,6 +70,19 @@ menu = Menu(screen, [play, save, sound_play,about_us],)
 while running:
     implnt = Implants(hero.implants)
     screen.fill((51, 97, 125))
+    screen.fill((150, 100, 100))
+    for layer in map.visible_layers:
+        if isinstance(layer, pytmx.TiledTileLayer):
+            for x, y, gid in layer:
+                tile = map.get_tile_image_by_gid(gid)
+                if tile:
+                    screen.blit(tile, (x * map.tilewidth - camera.x,
+                                       y * map.tileheight - camera.y))
+
+    for obj in map.objects:
+        Sprite((obj.x, obj.y), obj.image, objects)
+        screen.blit(obj.image, (obj.x - camera.x,
+                                obj.y - camera.y))
     mouse_pos = pygame.mouse.get_pos()
     mouse_pressed = pygame.mouse.get_pressed()
     # управление игроком
@@ -98,7 +125,7 @@ while running:
 
         if enemy_group:
             for enemy in enemy_group:
-                enemy.draw_hp() #хп врагаD
+                enemy.draw_hp() #хп врага
                 enemy.rotate_to_player(screen, hero.rect.center) #врага к игроку
                 enemy.update(hero.rect.x,hero.rect.y)#анимация врага
                 enemy.atacble(bullet_group,hero)  # проверка на попадание пули в врага
@@ -118,6 +145,7 @@ while running:
                         'image/hero_img/Imlants/Layer 1_for_imlants4.png']]
         for i in range(len(lst_with_box)):
             screen.blit(lst_with_box[i], (900, 200+(i*100)))
+        fixer.imp(hero,screen)
 
         if implnt.get_implants():
             implants = implnt.get_implants()
@@ -129,8 +157,7 @@ while running:
                 screen.blit(pygame.image.load('image/hero_img/Imlants/cyber_legs.png'), (840, 347))
             if 'cyber face' in implants:
                 screen.blit(pygame.image.load('image/hero_img/Imlants/maska0.png'), (840, 447))
-        # отрисовка карты
-        map.draw_map(screen)
+
     mouse.update()
     mouse.draw(mouse_pos)
     pygame.display.flip()

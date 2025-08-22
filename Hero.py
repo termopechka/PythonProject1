@@ -3,7 +3,7 @@ import math
 import pygame
 from pygame.math import Vector2
 from pygame.transform import rotate
-
+from camera import camera
 
 class Hero(pygame.sprite.Sprite):
     '''Класс персонажа, наследуется от pygame.sprite.Sprite, содержит методы для инициализации персонажа, обновления состояния, поворота к курсору мыши, проверки на время перезарядки стрельбы и отрисовки полосок здоровья и человечности'''
@@ -90,6 +90,8 @@ class Hero(pygame.sprite.Sprite):
         elif self.status == 'stand':
             self.image = self.walk_list[0]
             self.orig_image = self.image
+        camera.x = self.rect.x
+        camera.y = self.rect.y
     def get_rotation_angle(self):
         '''Получение угла поворота персонажа к курсору мыши'''
         direction = pygame.mouse.get_pos() - Vector2(self.rect.centerx, self.rect.centery)
