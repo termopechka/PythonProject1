@@ -3,7 +3,7 @@ import sqlite3
 from Hero import Hero,mouse
 from Key_action import controls, custom_group_draw
 from background import *
-from Setting import h, w, enemy_count, enemy_speed, x, y, npc_x, npc_y, Implant, Speed, Health, Humanizm, Coldown, harizm, Level, Exp, Point
+from Setting import h, w, enemy_count, enemy_speed, x, y, Implant, Speed, Health, Humanizm, Coldown, harizm, Level, Exp, Point
 from enemy import Enemy
 from pygame.sprite import LayeredUpdates
 from Menu import Button, Menu
@@ -80,7 +80,6 @@ while running:
                             data = [
                                 hero.return_main_attributes()
                             ]
-                            print(data)
                             cur.executemany("INSERT INTO SAVES VALUES(?,?,?,?,?,?,?,?,?,?)", data)
                             con.commit()
                         last_save_time = current_time

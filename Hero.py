@@ -157,7 +157,6 @@ class Hero(pygame.sprite.Sprite):
     def draw_humanizm(self):
         '''рисует человечность игрока и отображает ее в виде заполнености шприцов с имунодипресантами, если человечность больше 100, то рисуется 5 полных шприцов , если меньше 100, то рисуется столько изображений, сколько человечности деленное на 20'''
         self.hmnz = []
-        print(self.implants)
         for i in range(5 - len(self.implants)):
             img = pygame.image.load(f'image/hero_img/humanizm/shprc_0.png')
             img = pygame.transform.scale(img, (100, 100))
