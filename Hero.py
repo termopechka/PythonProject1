@@ -25,9 +25,12 @@ class Hero(pygame.sprite.Sprite):
 
 
 
+        self.implants = [] if Implants == None else Implants.split(',')  # Импланты персонажа
+
         self.HEALTH = health  # Здоровье
-        self.humanize = humanize  # Человечность
-        self.cooldown_shoot = cooldown_shoot  # Время перезарядки стрельбы
+        self.humanize = humanize - len(self.implants) * 20 # Человечность
+        self.cooldown_shoot_baze = cooldown_shoot
+        self.cooldown_shoot = self.cooldown_shoot_baze  # Время перезарядки стрельбы
         self.speed = speed # Скорость движения
         self.harizm = harizm  # Харизма
 
@@ -38,9 +41,17 @@ class Hero(pygame.sprite.Sprite):
 
 
         self.HEALTH1 = self.HEALTH  # Здоровье для отрисовки полоски здоровья
-        self.implants = [] if Implants == None else []  # Импланты персонажа
+
         self.sprint = speed * 1.5  # Ускорение
+        self.sprint_with_sandevistan = speed * 3
+        self.sprint_without_sandevistan = speed * 1.5
         self.shoot = None
+        self.sandevistan_time = 0
+
+        self.trail = []
+        self.sandevistan_activite = False
+        self.cooldown_trail = 200
+
 
         self.dilog = False
         self.dilog_now = 0
@@ -62,7 +73,7 @@ class Hero(pygame.sprite.Sprite):
             self.shoot_list.append(img)
         self.screen = screen
     def return_main_attributes(self):
-        return  None,self.implants if self.implants != [] else None, self.speed, self.HEALTH , self.humanize,  self.cooldown_shoot,   self.harizm, self.level,self.exp, self.point
+        return  None,','.join(self.implants) if self.implants != [] else None, self.speed+1, self.HEALTH , self.humanize,  self.cooldown_shoot,   self.harizm, self.level,self.exp, self.point
 
     def update(self):
         '''Обновление состояния персонажа, смена кадров анимации в зависимости от статуса'''
@@ -72,9 +83,10 @@ class Hero(pygame.sprite.Sprite):
         if self.status == 'move':
             self.image = self.walk_list[int(self.sprites_now)]
             self.orig_image = self.image
-        elif self.status == 'shoot':
+        elif self.status == 'shoot' :
             self.image = self.shoot_list[int(self.sprites_now)]
             self.orig_image = self.image
+
         elif self.status == 'stand':
             self.image = self.walk_list[0]
             self.orig_image = self.image
@@ -104,9 +116,33 @@ class Hero(pygame.sprite.Sprite):
                 self.shoot = False
                 self.status = 'stand'
 
+    def draw_track(self):
+
+        if self.sandevistan_activite:
+            self.sandevistan_time += 0.15
+            self.sprint = self.sprint_with_sandevistan
+            self.trail.append({
+                'x': self.rect.x,
+                'y': self.rect.y,
+                'rotation':-self.angle-90,
+                'image':self.orig_image
+            })
+            if len(self.trail) > 20:
+                del self.trail[0]
+            for i in range(len(self.trail) - 1):
+                self.trail[i]['image'].set_alpha(100)
+                self.screen.blit(pygame.transform.rotate(self.trail[i]['image'], self.trail[i]['rotation']), (self.trail[i]['x'], self.trail[i]['y']))
+        else:
+            self.sprint = self.sprint_without_sandevistan
+            self.orig_image.set_alpha(255)
+            self.trail = []
+
+
+
+
     def draw_hp_image(self):
         '''Меняет лицо игрока в зависимости от уровня здоровья, если здоровье больше 80, то лицо без повреждений, если меньше 80, но больше 40, то лицо разбито, если меньше 40, то лицо в мясо'''
-        if self.HEALTH > 0:
+        if self.HEALTH1 > 0:
             self.hp = None
             if self.HEALTH > 80:
                 self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp1.png')
@@ -116,15 +152,13 @@ class Hero(pygame.sprite.Sprite):
                 self.hp = pygame.image.load('image/hero_img/hp/Layer 1_Hero_hp3.png')
             self.hp = pygame.transform.scale(self.hp, (90, 90))
             self.screen.blit(self.hp, (10, 10))
-        else :
-            print('GAME OVER')
-            pygame.quit()
-            quit()
+
 
     def draw_humanizm(self):
         '''рисует человечность игрока и отображает ее в виде заполнености шприцов с имунодипресантами, если человечность больше 100, то рисуется 5 полных шприцов , если меньше 100, то рисуется столько изображений, сколько человечности деленное на 20'''
         self.hmnz = []
-        for i in range(self.humanize // 20):
+        print(self.implants)
+        for i in range(5 - len(self.implants)):
             img = pygame.image.load(f'image/hero_img/humanizm/shprc_0.png')
             img = pygame.transform.scale(img, (100, 100))
             self.hmnz.append(img)
@@ -147,6 +181,7 @@ class Hero(pygame.sprite.Sprite):
 
     def imp(self):
         '''Импорт персонажа, обновление состояния персонажа, поворот персонажа к курсору мыши, проверка на время перезарядки стрельбы, отрисовка полоски здоровья и человечности'''
+        self.draw_track()
         self.update()
         self.rotate()
         self.cooldown()

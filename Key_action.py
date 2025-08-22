@@ -3,7 +3,7 @@ import pygame,sys
 from Hero import Bullet
 
 
-def controls(h, bullet_group,menu,):
+def controls(h, bullet_group,menu,implant):
     '''Управление персонажем и обработка событий
     :param h: объект персонажа
     :param bullet_group: группа пуль
@@ -14,6 +14,7 @@ def controls(h, bullet_group,menu,):
             pygame.quit()
 
 
+
     # move
     if not hasattr(h, 'real_x'):
         h.real_x = float(h.rect.x)
@@ -22,6 +23,8 @@ def controls(h, bullet_group,menu,):
 
     keys = pygame.key.get_pressed()
     mouse = pygame.mouse.get_pressed()
+    current_time = pygame.time.get_ticks()
+    work_time_sandi = 400
     dx = 0
     dy = 0
     if keys[pygame.K_ESCAPE]:
@@ -29,6 +32,19 @@ def controls(h, bullet_group,menu,):
 
     if keys[pygame.K_e] :
         h.dilog = True
+
+    if keys[pygame.K_z] and 'cyber arm' in implant.get_implants():
+        h.cooldown_shoot = h.cooldown_shoot_baze // 4
+    else:
+        h.cooldown_shoot = h.cooldown_shoot_baze
+    if keys[pygame.K_x] and 'sandevistan' in implant.get_implants() :
+        h.sandevistan_activite = True
+    if h.sandevistan_time >= 10:
+        h.sandevistan_activite = False
+        h.sandevistan_time = 0
+    if 'cyber legs' in implant.get_implants():
+        h.speed = h.speed * 2
+
 
     if keys[pygame.K_a] and h.rect.x > 0 : dx -= 1
     h.status = 'move'

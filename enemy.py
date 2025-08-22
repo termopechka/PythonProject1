@@ -1,9 +1,11 @@
 import pygame
 from pygame.math import Vector2
+from math import sqrt
+import random
 
 class Enemy(pygame.sprite.Sprite):
     """Класс врага, наследуется от pygame.sprite.Sprite, содержит методы для инициализации врага, атаки, обновления состояния, поворота к игроку, проверки на попадание и отрисовки полоски здоровья"""
-    def __init__(self, position, speed,):
+    def __init__(self, speed,):
         super().__init__()
 
         self.list_sprites = []
@@ -21,7 +23,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect(center=position)
+        self.rect = self.image.get_rect(center=(random.randint(0, 800), random.randint(0, 700)))
         self.speed = speed
         self.HEALTH = 100 # Здоровье врага
         self.damage = 1
@@ -36,15 +38,22 @@ class Enemy(pygame.sprite.Sprite):
         :param player_y: Координата Y игрока"""
         if self.HEALTH > 0:
             offset = (self.rect.x - player_x-10, self.rect.y - player_y-10)
+            self.distance = sqrt((self.rect.x - player_x) ** 2 + (self.rect.y - player_y) ** 2)
             if self.mask.overlap(player_mask, offset):
                 self.status = 'attack'
                 return True
-            self.status = 'stand'
-            return False
+            else:
+                if 40 < self.distance <= 350:
+                    self.status = 'move'
+                elif self.distance > 350:
+                    self.status = 'stand'
+                    return False
 
-    def update(self, player_pos):
-        """Обновление состояния врага
-        :param player_pos: Позиция игрока"""
+
+
+    def update(self ,player_x,player_y):
+        """Обновление состояния врага"""
+
         if self.status == 'attack':
             self.sprites_now += self.speed_sprites
             if self.sprites_now >= len(self.list_sprites):
@@ -55,7 +64,17 @@ class Enemy(pygame.sprite.Sprite):
             self.image = self.list_sprites[0]
             self.orig_image = self.image
         if self.status == 'move':
-            pass
+            dx = player_x - self.rect.x
+            dy = player_y - self.rect.y
+            if dx != 0 or dy != 0:
+                length = sqrt(dx * dx + dy * dy)
+                dx ,dy =  dx / length ,dy / length
+
+
+                # Двигаемся с заданной скоростью
+                self.rect.x += dx * self.speed
+                self.rect.y += dy * self.speed
+
 
     def rotate_to_player(self, screen,player_pos):
         """Поворот врага к игроку
@@ -71,7 +90,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.center = old_center
         screen.blit(self.image, self.rect)
 
-    def atacble(self, bullet_group):
+    def atacble(self, bullet_group,h):
         """Проверка на попадание пули в врага
         :param bullet_group: Группа пуль
         Проверяет пересечение прямоугольника врага с прямоугольниками пуль,
@@ -82,8 +101,10 @@ class Enemy(pygame.sprite.Sprite):
                 self.HEALTH -= 10
                 bullet.kill()
             if self.HEALTH <= 0:
-
                 self.kill()
+                h.exp += 20
+                print(h.exp)
+
 
     def draw_hp(self):
         """Отрисовка полоски здоровья врага"""
