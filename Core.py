@@ -1,5 +1,8 @@
 import pygame.time
 import sqlite3
+import os
+import pytmx
+from pytmx.util_pygame import load_pygame
 from Hero import Hero,mouse
 from Key_action import controls, custom_group_draw
 from background import *
@@ -8,6 +11,9 @@ from enemy import Enemy
 from pygame.sprite import LayeredUpdates
 from Menu import Button, Menu
 from NPC import NPC
+from timer import timer
+from camera import create_screen
+from camera import camera
 pygame.init()
 clock = pygame.time.Clock()
 last_save_time = 0
@@ -23,14 +29,17 @@ if status_music:
     pygame.mixer.music.play(-10)
 
 
-screen = pygame.display.set_mode((h,w))
-pygame.display.set_caption('Live solo')
+# screen = pygame.display.set_mode((h,w))
+# pygame.display.set_caption('Live solo')
+
+screen = create_screen(h, w, 'Live solo')
 icon = pygame.image.load('image/assets_task_01k1476qdmfjsr95yxtwsdf192_1753562211_img_1.PNG')
 pygame.display.set_icon(icon)
 
 pause = True
 bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
+objects = pygame.sprite.Group()
 hero = Hero(screen, x, y, Implant, Speed, Health, Humanizm, Coldown, harizm, Level, Exp, Point,)
 mouse = mouse(screen)
 en = Enemy( (enemy_x, enemy_y), enemy_speed,)
@@ -38,12 +47,17 @@ enemy_group.add(en)
 
 
 
-npc = NPC(400, 650,font='font/DIGITALPIXELV4-REGULAR.ttf', name='Фиксер',lst_sprites=[f'image/Npc/Layer 1_fixer{i}.png' for i in range(1,5)],size=[100, 100])
+fixer = NPC(400, 650,font='font/DIGITALPIXELV4-REGULAR.ttf', name='Фиксер',lst_sprites=[f'image/Npc/Layer 1_fixer{i}.png' for i in range(1,5)],size=[100, 100], dialog=['Hey!'])
 
-map = TileMap('untitled.csv', spritesheet=hero.image)
+
+
+
+map = load_pygame(os.path.join('image', 'back', 'city.tmx'))
+map_width = map.width * map.tilewidth
+map_height = map.height * map.tileheight
+
 pygame.mouse.set_visible(False)
 running = True
-
 play = Button(x//2 +170, y//2, 200, 100, 'play.png', 'play_select.png', 'play_click.png')
 save = Button(x//2 + 170, y//2 + 120, 200, 100, 'save.png', 'save_select.png', 'save_click.png')
 sound_play = Button(x//2 + 170, y//2 + 240, 200, 100, 'sound.png', 'sound_select.png', 'sound_click.png')
@@ -52,6 +66,18 @@ menu = Menu(screen, [play, save, sound_play], )
 
 while running:
     screen.fill((150, 100, 100))
+    for layer in map.visible_layers:
+        if isinstance(layer, pytmx.TiledTileLayer):
+            for x, y, gid in layer:
+                tile = map.get_tile_image_by_gid(gid)
+                if tile:
+                    screen.blit(tile, (x * map.tilewidth - camera.x,
+                                       y * map.tileheight - camera.y))
+
+    for obj in map.objects:
+        Sprite((obj.x, obj.y), obj.image, objects)
+        screen.blit(obj.image, (obj.x - camera.x,
+                                obj.y - camera.y))
     mouse_pos = pygame.mouse.get_pos()
     mouse_pressed = pygame.mouse.get_pressed()
     # управление игроком
@@ -105,10 +131,9 @@ while running:
         bullet_group.update()
         custom_group_draw(bullet_group, screen)
         # анимация мышки
-        npc.imp(hero,screen)
+        fixer.imp(hero,screen)
 
-        # отрисовка карты
-        map.draw_map(screen)
+
     mouse.update()
     mouse.draw(mouse_pos)
     pygame.display.flip()
